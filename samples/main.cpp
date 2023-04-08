@@ -32,7 +32,7 @@ void print(stdvector<pair<polynome,bool>> arr){
 }
 int main() {
     stdvector<polynome>a;
-    cout<<"terms of use:\n1 enter all operators and numbers separately by space (it can be more than 1)\n2 integers and decimals are supported\n3 addition, substraction, multiplication and division are supported\n4 Variables are supported\5 Variables must start with latin letter or with _\n6 Variables can consist latin letters, '_' and numbers\n";
+    cout<<"terms of use:\n1 enter all operators and numbers separately by space (it can be more than 1)\n2 integers and decimals are supported\n3 addition, substraction, multiplication and division are supported\n4 Variables are supported\5 Variables must start with latin letter or with _\n6 Variables can consist latin letters, '_' and numbers\n8 polynomes can be wrote only as variables\n9 monomes' format: <coef>x<x power>y<y power>z<z power>\n";
     string res;
     while (true) {
         cout<<"enter the expression:\n";

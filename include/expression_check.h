@@ -41,7 +41,7 @@ bool check_func(std::string str){
 }
 bool check_lex(std::string str){
     if (check_func(str)) return true;
-    if (!str.size() || str[0]=='(' || str[0]==')' || str[0]=='+' || str[0]=='-' || str[0]=='/' || str[0]=='*'){
+    if (!str.size() || str[0]=='(' || str[0]==')' || str[0]=='+' || str[0]=='-' || str[0]=='/' || str[0]=='*' || str[0]=='^'){
         if (str.size()>1 && (str[0]=='-' || str[0]==')' || str[0]=='(' || str[0]=='+' || str[0]=='/' || str[0]=='*')) return false;
         return true;
     }
@@ -188,6 +188,11 @@ template <class arr> bool check_post(TDynamicQueue<State>& expr, stdvector<std::
                     if (b.check_zero()) return false;
                     tmp.push(a / b);
                     break;
+                case '^':
+                    if (!(b.isnum() && abs(int(b.get_coef())-b.get_coef())<1e-7)) return false;
+                    tmp.push(a ^ int(b.get_coef()));
+                    break;
+                    
             }
         }
     }

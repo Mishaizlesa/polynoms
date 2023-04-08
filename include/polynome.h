@@ -115,6 +115,17 @@ public:
         }
         return res;
     }
+    polynome operator ^ (int b){
+        polynome res;
+        polynome tmp=*this;
+        res.insert(monome(1,0,0,0));
+        while (b) {
+            if (b%2) res=res*tmp;
+            tmp=tmp*tmp;
+            b/=2;
+        }
+        return res;
+    }
     bool valid(){
         return !(abs((*data.begin()).getc())<1e-7);
     }
@@ -138,7 +149,8 @@ public:
         }
         return it1 == this->data.end() && it2 == p.data.end();
     }
-
+    
+    
     bool operator != (polynome p) { return !(*this == p); }
     polynome difx(){
         polynome res;
@@ -198,5 +210,12 @@ public:
     }
     bool check_zero(){
         return abs((*data.begin()).getc())<1e-7;
+    }
+    bool isnum(){
+        auto m=*data.begin();
+        return m.getx()==0 && m.gety()==0 && m.getz()==0;
+    }
+    double get_coef(){
+        return (*data.begin()).getc();
     }
 };

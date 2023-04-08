@@ -38,7 +38,6 @@ stdvector<std::pair<polynome,bool>> solve(std::string str, stdvector<polynome>& 
     else{
         for(auto& el: tmp_var){
             if (!el.first.size()) continue;
-            std::cout << "2222";
             polynome pol;
             std::cout<<el.first<<" = ";
             std::string str;getline(std::cin,str);
@@ -77,7 +76,6 @@ stdvector<std::pair<polynome,bool>> solve(std::string str, stdvector<polynome>& 
         var_tree_rb[el.first]=el.second;
         var_table_unord[el.first]=el.second;
     }
-    int a=111;
     if (!check_infix(inf,post)){
         return err;
     }

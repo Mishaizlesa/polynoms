@@ -11,13 +11,19 @@
 #include "HashTable.h"
 #include "TreeT.h"
 #include "TableT.h"
-stdvector<std::pair<polynome,bool>> solve(std::string str, stdvector<polynome>& test){
-    stdvector<std::pair<polynome,bool>> err(0);
-    stdvector<std::pair<polynome,bool>> res(0);
+//#include "menu.h"
+template <class arr> inline std::pair<polynome,int> solve(std::string str, arr& container, stdvector<polynome>& test){
+    std::pair <polynome,int>res;
+    std::pair<polynome,int>err_expr;
+    std::pair<polynome,int>err_var;
+    err_expr.first=polynome();
+    err_expr.second=0;
+    err_var.first=polynome();
+    err_var.second=2;
     TDynamicQueue<State>inf;
     TDynamicQueue<State>post;
 
-    my_unordered_map<polynome>tmp_var;
+    /*my_unordered_map<polynome>tmp_var;
 
     my_unordered_map<polynome>var_hash;
     HashTable<polynome>var_hash_list;
@@ -26,72 +32,26 @@ stdvector<std::pair<polynome,bool>> solve(std::string str, stdvector<polynome>& 
     TreeT<std::string, polynome>var_tree_rb;
 
     Table<std::string,polynome>var_table;
-    TableT<std::string, polynome>var_table_unord;
-    if (!check_str(str,inf,tmp_var)) return err;
+    TableT<std::string, polynome>var_table_unord;*/
+    if (!check_str(str,inf,container)) return err_expr;
     if (test.get_size()){
         int i=-1;
-        for(auto& el:tmp_var){
-            if (el.first.size()){ i++;
-                el.second=test[i];}
+        auto it=container.begin();
+        for(;it!=container.end();++it){
+            if ((*it).first.size()){ i++;
+                (*it).second=test[i];}
         }
-    }
-    else{
-        for(auto& el: tmp_var){
-            if (!el.first.size()) continue;
-            polynome pol;
-            std::cout<<el.first<<" = ";
-            std::string str;getline(std::cin,str);
-            if (!str.size()) return err;
-            str+=' ';
-            std::size_t pos = str.find(' ');
-            State prev;
-            bool neg=0;
-            while (pos < str.size()){
-                auto tmp_str=str.substr(0, pos);
-                if (tmp_str!="-" && tmp_str!="+" && tmp_str!=" "){
-                    if (!checkmonome(tmp_str)){
-                        return err;
-                    }
-                    monome mon(tmp_str);
-                    if (neg){
-                        mon=mon*-1;
-                        neg=0;
-                    }
-                    pol.insert(mon);
-                }else{
-                    if (tmp_str=="-") neg=1;
-                }
-                str = str.substr(pos + 1);
-                pos = str.find(' ');
-            }
-            el.second=pol;
+    }else{
+        for(auto el: container){
+            if (el.first.size() && !el.second.size()) return err_var;
         }
-    }
-    for(auto& el: tmp_var){
-        if (!el.first.size()) continue;
-        var_hash[el.first]=el.second;
-        var_tree[el.first]=el.second;
-        var_table[el.first]=el.second;
-        var_hash_list[el.first]=el.second;
-        var_tree_rb[el.first]=el.second;
-        var_table_unord[el.first]=el.second;
     }
     if (!check_infix(inf,post)){
-        return err;
+        return err_expr;
     }
     //std::cout<<var_tree["a"]<<"\n";
     TDynamicQueue<State>cop(post);
-    if (!check_post(post,res,var_hash)) return err;
-    post = cop;
-    if (!check_post(post,res,var_tree)) return err;
-    post=cop;
-    if (!check_post(post,res,var_table)) return err;
-    post=cop;
-    if (!check_post(post,res,var_hash_list)) return err;
-    post=cop;
-    if (!check_post(post,res,var_tree_rb)) return err;
-    post=cop;
-    if (!check_post(post,res,var_table_unord)) return err;
+    if (!check_post(post,res,container)) return err_expr;
     return res;
 }
 #endif /* solve_expr_h */

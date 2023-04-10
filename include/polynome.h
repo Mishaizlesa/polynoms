@@ -218,4 +218,7 @@ public:
     double get_coef(){
         return (*data.begin()).getc();
     }
+    int size(){
+        return data.size();
+    }
 };

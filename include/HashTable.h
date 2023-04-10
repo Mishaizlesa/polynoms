@@ -39,7 +39,7 @@ public:
 		iterator(list_iterator _iter, size_t _i, HashTable* _ht) { iter = _iter; index_in_vector = _i; ht = _ht; }
 		bool operator ==(const iterator& it) { return iter == it.iter && index_in_vector == it.index_in_vector; }
 		bool operator !=(const iterator& it) { return !(operator==(it)); }
-		std::pair<const TKey, TValue&> operator*() { auto& tmp = *iter;  return std::pair<const TKey, TValue&>(tmp.first, tmp.second); }
+		std::pair<const TKey, TValue&> operator*() { auto& tmp = *iter;  return std::pair<TKey, TValue&>(tmp.first, tmp.second); }
 		iterator& operator ++();
 	};
 

@@ -29,7 +29,7 @@ public:
         iterator(const iterator& it) { data_it = it.data_it; root=it.root; }
         bool operator ==(const iterator& it) { return data_it == it.data_it; }
         bool operator !=(const iterator& it) { return !(data_it==it.data_it); }
-        std::pair<A,B&> operator*() { return {data_it->key, data_it->val}; }
+        std::pair<A&,B&> operator*() { return {data_it->key, data_it->val}; }
         iterator& operator ++(){
             auto tmp=root;
             std::stack<node*>stack;

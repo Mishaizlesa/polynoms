@@ -124,15 +124,15 @@ bool check_infix(TDynamicQueue<State>& expr, TDynamicQueue<State>& post){
     }
     return true;
 }
-template <class arr> bool check_post(TDynamicQueue<State>& expr, stdvector<std::pair<polynome,bool>>& res,arr& var){
+template <class arr> bool check_post(TDynamicQueue<State>& expr, std::pair<polynome,int>& res,arr& var){
     if (expr.size() == 1){
         if (expr.front().type_==State::VARIABLE){
-            res.push_back({var[expr.front().data],0});
+            res={var[expr.front().data],0};
         }else if (expr.front().type_==State::NUMBER){
             polynome pol;
             monome tmp(std::stod(expr.front().data),0,0,0);
             pol.insert(tmp);
-            res.push_back({pol,0});
+            res={pol,0};
         }
     }
     stack< polynome > tmp;
@@ -189,7 +189,7 @@ template <class arr> bool check_post(TDynamicQueue<State>& expr, stdvector<std::
                     tmp.push(a / b);
                     break;
                 case '^':
-                    if (!(b.isnum() && abs(int(b.get_coef())-b.get_coef())<1e-7)) return false;
+                    if (!(b.isnum() && int(b.get_coef())-b.get_coef()<1e-7) && int(b.get_coef())>=0) return false;
                     tmp.push(a ^ int(b.get_coef()));
                     break;
                     
@@ -200,6 +200,6 @@ template <class arr> bool check_post(TDynamicQueue<State>& expr, stdvector<std::
     {
         return false;
     }
-    res.push_back({tmp.top(),1});
+    res={tmp.top(),1};
     return true;
 }

@@ -92,7 +92,7 @@ void menu( my_unordered_map<polynome>&var_hash,HashTable<polynome>&var_hash_list
         std::cout<<"number of variables = ";std::cin>>num;
         for(int i=0;i<num;++i){
             std::string var;
-            std::cout<<i+1<<": ";
+            std::cout<<"name of "<<i+1<<" variable: ";
             do{
                 std::cin>>var;
                 
@@ -114,10 +114,11 @@ void menu( my_unordered_map<polynome>&var_hash,HashTable<polynome>&var_hash_list
     }else if (ch==3){
         std::string var;
         do{
+            std::cout<<"var : ";
             std::cin>>var;
             
         }while(!check_var(var));
-        std::cout<<"variable is"<<(find(var_hash,var)?"in container":"is not in continer")<<"\n";
+        std::cout<<"variable is"<<(find(var_hash,var)?" in container":" not in continer")<<"\n";
     }else{
         stdvector<polynome>test;
         std::cout<<"enter the expression:\n";

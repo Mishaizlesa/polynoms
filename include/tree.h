@@ -1,4 +1,4 @@
-#include <stack>
+#include "stack"
 template <class A, class B>class Tree{
 private:
     struct node{
@@ -86,7 +86,7 @@ public:
         }else if (t->key<key_){
             t->r=insert_real(key_, val_, t->r);
         }else{
-            t->val=val_;
+            //t->val=val_;
         }
         return balance(t);
     }

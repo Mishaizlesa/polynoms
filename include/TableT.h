@@ -59,7 +59,6 @@ inline void TableT<TKey, TValue>::insert(const std::pair<TKey, TValue>& p)
 	auto it = find(p.first);
 	if (it != v.end())
 	{
-		it->second = p.second;
 		return;
 	}
 	v.push_back(p);
@@ -73,7 +72,8 @@ inline void TableT<TKey, TValue>::erase(const TKey& key)
 
 	if (it != v.end())
 	{
-		swap(it, --v.end());
+		size_t i = it - v.begin();
+		swap(v[i], v.back());
 		v.pop_back();
 		return;
 	}

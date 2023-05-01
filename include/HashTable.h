@@ -152,6 +152,9 @@ inline typename HashTable<TValue, TKey>::iterator HashTable<TValue, TKey>::inser
 template<class TValue, class TKey>
 inline typename HashTable<TValue, TKey>::iterator HashTable<TValue, TKey>::erase(const TKey& key)
 {
+
+	if (find(key) == end())
+		return end();
 	--sz;
 
 	size_t hash = hash_str(key);

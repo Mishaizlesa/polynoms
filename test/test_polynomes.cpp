@@ -1,6 +1,7 @@
 #include "stack.h"
 #include <gtest/gtest.h>
 #include "polynome.h"
+
 class polunome_f :
     public ::testing::TestWithParam<int> {
 

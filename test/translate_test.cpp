@@ -1,10 +1,14 @@
 #include "solve_expr.h"
 #include <gtest/gtest.h>
 #include <iostream>
-class translate : 
-    public ::testing::TestWithParam<int>{
 
+template <typename T>
+class translate : public testing::Test {
+public:
+    using MyTable = T;
 protected:
+
+    MyTable t1;
     stdvector<polynome>a;
 
     polynome A, B, C, D;
@@ -28,91 +32,85 @@ protected:
             D.insert(monome(rand(), rand(), rand(), rand()));
         }
 
-        a.push_back(A);
-        a.push_back(B);
-        a.push_back(C);
-        a.push_back(D);
+        t1["A"] = A;
+        t1["B"] = B;
+        t1["C"] = C;
+        t1["D"] = D;
     }
     
 };
 
-TEST_F(translate, can_solve)
+using MyTypes = ::testing::Types<
+    TableT<std::string, polynome>
+    , Table<std::string, polynome>
+    , TreeT<std::string, polynome>
+    , Tree<std::string, polynome>
+    ,HashTable<polynome, std::string>
+    , my_unordered_map<polynome, std::string>
+
+>;
+TYPED_TEST_SUITE(translate, MyTypes);
+
+
+TYPED_TEST(translate, can_solve)
 {
-    EXPECT_EQ(6, solve("A + B + C * A",a).get_size());
+    EXPECT_NO_THROW(solve<MyTable>("A + B + C * A", t1,  a));
 }
 
-TEST_F(translate, correct_add)
+TYPED_TEST(translate, correct_add)
 {
-    auto res = solve("A + B", a);
-    EXPECT_EQ(res.get_size(), 6);
-    for (int i = 0; i < res.get_size(); i++)
-    {
-        EXPECT_TRUE(res[0].first == A + B);
-    }
+    auto res = solve<MyTable>("A + B", t1, a);
+    EXPECT_TRUE(res.first == A + B);
 }
 
-TEST_F(translate, correct_sub)
+TYPED_TEST(translate, correct_sub)
 {
-    auto res = solve("A - B", a);
-    EXPECT_EQ(res.get_size(), 6);
+    auto res = solve<MyTable>("A - B", t1, a);
     auto sub = A - B;
-    for (int i = 0; i < res.get_size(); i++)
-    {
-        EXPECT_TRUE(res[0].first == sub);
-    }
+    EXPECT_TRUE(res.first == sub);
+
 }
 
-TEST_F(translate, correct_mul)
+TYPED_TEST(translate, correct_mul)
 {
-    auto res = solve("A * B", a);
-    EXPECT_EQ(res.get_size(), 6);
+    auto res = solve<MyTable>("A * B",t1, a);
     auto mul = A * B;
-    for (int i = 0; i < res.get_size(); i++)
-    {
-        EXPECT_TRUE(res[0].first == mul);
-    }
+    EXPECT_TRUE(res.first == mul);
+    
 }
 
 
-TEST_F(translate, correct_div)
+
+TYPED_TEST(translate, correct_div)
 {
-    auto res = solve("A / B", a);
-    EXPECT_EQ(res.get_size(), 6);
+    auto res = solve<MyTable>("A / B", t1, a);
     polynome div = A / B;
-    for (int i = 0; i < res.get_size(); i++)
-    {
-        EXPECT_TRUE(res[0].first == div);
-    }
+    EXPECT_TRUE(res.first == div);
+    
 }
 
 
-TEST_F(translate, correct_priority_of_oper1)
+TYPED_TEST(translate, correct_priority_of_oper1)
 {
-    auto res = solve("A + B * C", a);
-    EXPECT_EQ(res.get_size(), 6);
+    auto res = solve<MyTable>("A + B * C", t1, a);
     auto ans = B * C;
     ans = A + ans;
-    for (int i = 0; i < 6; i++)
-    {
-        EXPECT_TRUE(res[0].first == ans);
-    }
+    EXPECT_TRUE(res.first == ans);
+
 }
 
-TEST_F(translate, correct_priority_of_oper2)
+TYPED_TEST(translate, correct_priority_of_oper2)
 {
-    auto res = solve("( A + B ) * C", a);
-    EXPECT_EQ(res.get_size(), 6);
+    auto res = solve<MyTable>("( A + B ) * C", t1, a);
     auto ans = A + B;
     ans = ans * C;
-    for (int i = 0; i < res.get_size(); i++)
-    {
-        EXPECT_TRUE(res[0].first == ans);
-    }
+    EXPECT_TRUE(res.first == ans);
+
 }
 
 
-TEST_F(translate, cant_solve_expr_with_invalid_lexems)
+TYPED_TEST(translate, cant_solve_expr_with_invalid_lexems)
 {
-    auto res = solve("A < 3", a);
-    EXPECT_EQ(res.get_size(), 0);
+    auto res = solve<MyTable>("A < 3", t1, a);
+    EXPECT_EQ(res.second, 0);
 }

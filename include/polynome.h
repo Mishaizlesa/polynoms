@@ -1,45 +1,83 @@
 #include "monome.h"
-#include "list.h"
+#include <list>
 #include <forward_list>
-class polynome{
+class polynome {
 private:
-    TDynamicList<monome>data;
+    std::list<monome>data;
 public:
-    polynome()=default;
-    void insert(const monome& a_){
-        auto a=a_;
-        auto it=data.begin();
-        auto prev=it;
-        while (it!=data.end() && *it>a) {
-            prev=it;
+    polynome() = default;
+    void insert(const monome& a_) {
+        auto a = a_;
+        auto it = data.begin();
+        auto prev = it;
+        while (it != data.end() && *it > a) {
+            prev = it;
             ++it;
         }
-        if (it.node){
-            if (*it ^ a){
-                *it=*it+a;
-            }else{
-                if (prev==it) data.push_front(a);
-                else data.insert_after(prev,a);
+        if (it != data.end()) {
+            if (*it ^ a) {
+                *it = *it + a;
             }
-        }else{
-            if (data.begin()==data.end()) data.push_front(a);
-            else data.insert_after(prev,a);
+            else {
+                if (prev == it) data.push_front(a);
+                else data.insert(it, a);
+            }
+        }
+        else {
+            if (data.begin() == data.end()) data.push_front(a);
+            else data.insert(it, a);
         }
     }
-    
-    polynome operator +(polynome& b){
+
+    polynome operator +(polynome& b) {
         polynome tmp;
-        auto it=data.begin();
-        while (it!=data.end()) {
-            auto ins=*it;
-            tmp.insert(ins);
-            ++it;
+        auto ptr1 = data.begin();
+        auto prev = ptr1;
+        while (true) {
+            if (ptr1 == data.end()) {
+                ptr1 = prev;
+                break;
+            }
+            prev = ptr1;
+            ptr1++;
         }
-        it=b.data.begin();
-        while (it!=data.end()) {
-            auto ins=*it;
-            tmp.insert(ins);
-            ++it;
+        auto ptr2 = b.data.begin();
+        prev = ptr2;
+        while (true) {
+            if (ptr2 == b.data.end()) {
+                ptr2 = prev;
+                break;
+            }
+            prev = ptr2;
+            ptr2++;
+        }
+        while (true) {
+            if (*ptr1 > *ptr2) {
+                if (ptr2 == b.data.begin()) {
+                    tmp.insert(*(ptr2));
+                    ptr2 = data.end();
+                    break;
+                }
+                else { tmp.insert(*(ptr2)); ptr2--; }
+            }
+            else {
+                if (ptr1 == data.begin()) {
+                    tmp.insert(*(ptr1));
+                    ptr1 = data.end();
+                    break;
+                }
+                else { tmp.insert(*(ptr1)); ptr1--; }
+            }
+        }
+        if (ptr1 == data.end()) {
+            while (ptr2 != b.data.begin())  tmp.insert(*(--ptr2));
+            tmp.insert(*(ptr2));
+        }
+        else {
+            while (ptr1 != data.begin()) {
+                tmp.insert(*(--ptr1));
+            }
+            tmp.insert(*(ptr1));
         }
         return tmp;
     }
@@ -48,16 +86,16 @@ public:
         b = b * (-1);
         return *this + b;
     }
-    
-    polynome operator *(polynome& b){
+
+    polynome operator *(polynome& b) {
         polynome tmp;
-        auto it=data.begin();
-        while(it!=data.end()){
-            auto it2=b.data.begin();
-            while(it2!=b.data.end()){
-                auto tmp_mon1=*it;
-                auto tmp_mon2=*it2;
-                auto tmp_monres=tmp_mon1*tmp_mon2;
+        auto it = data.begin();
+        while (it != data.end()) {
+            auto it2 = b.data.begin();
+            while (it2 != b.data.end()) {
+                auto tmp_mon1 = *it;
+                auto tmp_mon2 = *it2;
+                auto tmp_monres = tmp_mon1 * tmp_mon2;
                 tmp.insert(tmp_monres);
                 ++it2;
             }
@@ -65,69 +103,71 @@ public:
         }
         return tmp;
     }
-    polynome operator *(double b){
+    polynome operator *(double b) {
         polynome tmp;
-        auto it=data.begin();
-        while(it!=data.end()){
-            auto ins=*it*b;
+        auto it = data.begin();
+        while (it != data.end()) {
+            auto ins = *it * b;
             tmp.insert(ins);
             ++it;
         }
         return tmp;
     }
-    polynome operator /(double b){
+    polynome operator /(double b) {
         polynome tmp;
-        auto it=data.begin();
-        while(it!=data.end()){
-            auto ins=*it/b;
+        auto it = data.begin();
+        while (it != data.end()) {
+            auto ins = *it / b;
             tmp.insert(ins);
             ++it;
         }
         return tmp;
     }
-    polynome operator /(polynome& b){
+    polynome operator /(polynome& b) {
         polynome div;
-        auto it=data.begin();
-        while(it!=data.end()) {
-            auto ins=*it;
+        auto it = data.begin();
+        while (it != data.end()) {
+            auto ins = *it;
             div.insert(ins);
             ++it;
-            
+
         }
-        it=div.data.begin();
-        auto ptr=b.data.begin();
+        it = div.data.begin();
+        auto ptr = b.data.begin();
         polynome res;
         int f;
-        for(;;){
-            it=div.data.begin();
-            while(it!=data.end() && ((*ptr).getx()>(*it).getx() || (*ptr).gety()>(*it).gety() || (*ptr).getz()>(*it).getz())) ++it;
-            if (it==data.end()) break;
-            auto m1=*it;
-            auto m2=*ptr;
-            auto r=m1/m2;
+        for (;;) {
+            it = div.data.begin();
+            while (it != div.data.end() && ((*ptr).getx() > (*it).getx() || (*ptr).gety() > (*it).gety() || (*ptr).getz() > (*it).getz())) {
+                ++it;
+            }
+            if (it == div.data.end()) break;
+            auto m1 = *it;
+            auto m2 = *ptr;
+            auto r = m1 / m2;
             res.insert(r);
-            auto tmp=ptr;
-            while (tmp!=b.data.end()) {
-                auto ins=*tmp*(r*-1);
+            auto tmp = ptr;
+            while (tmp != b.data.end()) {
+                auto ins = *tmp * (r * -1);
                 div.insert(ins);
                 ++tmp;
             }
         }
         return res;
     }
-    polynome operator ^ (int b){
+    polynome operator ^ (int b) {
         polynome res;
-        polynome tmp=*this;
-        res.insert(monome(1,0,0,0));
+        polynome tmp = *this;
+        res.insert(monome(1, 0, 0, 0));
         while (b) {
-            if (b%2) res=res*tmp;
-            tmp=tmp*tmp;
-            b/=2;
+            if (b % 2) res = res * tmp;
+            tmp = tmp * tmp;
+            b /= 2;
         }
         return res;
     }
-    bool valid(){
-        return !(abs((*data.begin()).getc())<1e-7);
+    bool valid() {
+        return !(abs((*data.begin()).getc()) < 1e-7);
     }
 
     bool operator == (polynome p)
@@ -135,7 +175,7 @@ public:
         auto it1 = this->data.begin();
         auto it2 = p.data.begin();
 
-        
+
         if (data.size() == 1 && p.data.size() == 0 && (*it1) == monome(0.0, 0, 0, 0))
             return true;
 
@@ -149,76 +189,76 @@ public:
         }
         return it1 == this->data.end() && it2 == p.data.end();
     }
-    
-    
+
+
     bool operator != (polynome p) { return !(*this == p); }
-    polynome difx(){
+    polynome difx() {
         polynome res;
-        for(auto el: data){
-            auto tmp=el.difx();
+        for (auto el : data) {
+            auto tmp = el.difx();
             res.insert(tmp);
         }
         return res;
     }
-    polynome dify(){
+    polynome dify() {
         polynome res;
-        for(auto el: data){
-            auto tmp=el.dify();
+        for (auto el : data) {
+            auto tmp = el.dify();
             res.insert(tmp);
         }
         return res;
     }
-    polynome difz(){
+    polynome difz() {
         polynome res;
-        for(auto el: data){
-            auto tmp=el.difz();
+        for (auto el : data) {
+            auto tmp = el.difz();
             res.insert(tmp);
         }
         return res;
     }
-    polynome intx(){
+    polynome intx() {
         polynome res;
-        for(auto el: data){
-            auto tmp=el.intx();
+        for (auto el : data) {
+            auto tmp = el.intx();
             res.insert(tmp);
         }
         return res;
     }
-    polynome inty(){
+    polynome inty() {
         polynome res;
-        for(auto el: data){
-            auto tmp=el.inty();
+        for (auto el : data) {
+            auto tmp = el.inty();
             res.insert(tmp);
         }
         return res;
     }
-    polynome intz(){
+    polynome intz() {
         polynome res;
-        for(auto el: data){
-            auto tmp=el.intz();
+        for (auto el : data) {
+            auto tmp = el.intz();
             res.insert(tmp);
         }
         return res;
     }
-    friend std::ostream& operator << (std::ostream& o, polynome& a){
-        auto it=a.data.begin();
-        while (it!=a.data.end()) {
-            o<<*it<<" ";
+    friend std::ostream& operator << (std::ostream& o, polynome& a) {
+        auto it = a.data.begin();
+        while (it != a.data.end()) {
+            o << *it << " ";
             ++it;
         }
         return o;
     }
-    bool check_zero(){
-        return abs((*data.begin()).getc())<1e-7;
+    bool check_zero() {
+        return abs((*data.begin()).getc()) < 1e-7;
     }
-    bool isnum(){
-        auto m=*data.begin();
-        return m.getx()==0 && m.gety()==0 && m.getz()==0;
+    bool isnum() {
+        auto m = *data.begin();
+        return m.getx() == 0 && m.gety() == 0 && m.getz() == 0;
     }
-    double get_coef(){
+    double get_coef() {
         return (*data.begin()).getc();
     }
-    int size(){
+    int size() {
         return data.size();
     }
 };
